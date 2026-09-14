@@ -1,0 +1,20 @@
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary / editor files
+*~
+*.swp
+.vscode/
+
+# LibreOffice/pdf conversion artifacts (regenerated, not source)
+*.pdf
+~$*.docx
+~$*.xlsx

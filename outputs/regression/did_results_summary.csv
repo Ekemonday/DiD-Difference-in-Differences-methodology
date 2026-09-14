@@ -1,0 +1,4 @@
+"model","did_coefficient_pp","std_error_pp","p_value","ci_lower_pp","ci_upper_pp"
+"Model 1: Simple DiD (no controls)",11.35,1.51,5.96e-14,8.39,14.31
+"Model 2: DiD + covariates + state FE (modern method)",11.64,1.46,1.789e-15,8.78,14.51
+"Model 3: DiD + covariates + state FE (any method)",10.43,1.44,4.43e-13,7.61,13.25

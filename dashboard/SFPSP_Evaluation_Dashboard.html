@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SFPSP Contraceptive Uptake Evaluation Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root{
+    --navy:#0C2D48;
+    --navy-light:#14508A;
+    --teal:#0F6E56;
+    --teal-light:#1D9E75;
+    --amber:#BA7517;
+    --amber-light:#EF9F27;
+    --bg:#F6F7F9;
+    --card:#FFFFFF;
+    --border:#E2E5EA;
+    --text:#1B1F27;
+    --text-secondary:#5B6472;
+    --text-muted:#8A93A2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Segoe UI', Arial, sans-serif; background:var(--bg); color:var(--text);
+  }
+  .header{
+    background:linear-gradient(135deg, var(--navy) 0%, #123A5C 100%);
+    color:#fff; padding:28px 40px;
+  }
+  .header h1{margin:0 0 4px; font-size:22px; font-weight:600;}
+  .header p{margin:0; font-size:13px; color:#C9D6E3;}
+  .container{max-width:1200px; margin:0 auto; padding:24px 40px 60px;}
+  .kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:-20px 40px 24px; position:relative; z-index:2;}
+  .kpi-card{
+    background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px;
+    box-shadow:0 2px 8px rgba(12,45,72,0.06);
+  }
+  .kpi-label{font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;}
+  .kpi-value{font-size:26px; font-weight:700; color:var(--navy);}
+  .kpi-sub{font-size:12px; color:var(--text-secondary); margin-top:4px;}
+  .kpi-highlight .kpi-value{color:var(--teal);}
+  .section{margin-bottom:28px;}
+  .section-title{font-size:15px; font-weight:600; margin:0 0 4px; color:var(--navy);}
+  .section-desc{font-size:12.5px; color:var(--text-secondary); margin:0 0 14px;}
+  .grid-2{display:grid; grid-template-columns:1.3fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 20px;
+  }
+  .chart-wrap{position:relative; width:100%;}
+  .legend{display:flex; gap:16px; margin-bottom:10px; font-size:12px; color:var(--text-secondary); flex-wrap:wrap;}
+  .legend span{display:flex; align-items:center; gap:5px;}
+  .dot{width:10px; height:10px; border-radius:2px; display:inline-block;}
+  table.did-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  table.did-table th{
+    text-align:left; padding:8px 10px; border-bottom:2px solid var(--border); color:var(--text-secondary);
+    font-weight:600; font-size:11.5px; text-transform:uppercase; letter-spacing:0.02em;
+  }
+  table.did-table td{padding:9px 10px; border-bottom:1px solid var(--border); color:var(--text);}
+  table.did-table tr:last-child td{border-bottom:none;}
+  .sig-badge{
+    background:#E1F5EE; color:#085041; font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px;
+  }
+  .note-box{
+    background:#FDF6E9; border:1px solid #F0DDB0; border-radius:8px; padding:12px 16px; font-size:12px;
+    color:#6B4E13; margin-top:12px; line-height:1.5;
+  }
+  .footer{
+    text-align:center; font-size:11.5px; color:var(--text-muted); padding:20px 0 0; border-top:1px solid var(--border); margin-top:10px;
+  }
+  @media (max-width: 900px){
+    .kpi-row{grid-template-columns:repeat(2,1fr); margin:-20px 16px 24px;}
+    .container{padding:24px 16px 60px;}
+    .grid-2, .grid-3{grid-template-columns:1fr;}
+    .header{padding:24px 20px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>State Family Planning Support Programme (SFPSP) — Evaluation Dashboard</h1>
+  <p>Difference-in-Differences impact evaluation of contraceptive uptake among women 15–49 · Northern Nigeria · 2018 (baseline) – 2022 (endline) · Synthetic DHS-style dataset</p>
+</div>
+
+<div class="kpi-row" id="kpiRow"></div>
+
+<div class="container">
+
+  <div class="section">
+    <h2 class="section-title">Modern contraceptive prevalence over time</h2>
+    <p class="section-desc">Treatment states received SFPSP from 2019–2020; control states did not. Both groups tracked closely at baseline.</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="legend">
+          <span><span class="dot" style="background:#14508A"></span>Treatment states</span>
+          <span><span class="dot" style="background:#BA7517"></span>Control states</span>
+        </div>
+        <div class="chart-wrap" style="height:300px;">
+          <canvas id="trendChart" role="img" aria-label="Line chart showing modern contraceptive prevalence rising from 16.6% to 31.3% in treatment states versus 17.2% to 18.9% in control states, 2018 to 2022"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="font-size:13px;">Difference-in-Differences estimate</div>
+        <p class="section-desc" style="margin-bottom:16px;">Programme effect on modern contraceptive use, robust to specification</p>
+        <table class="did-table" id="didTable"></table>
+        <div class="note-box">Estimate stable across a simple 2x2 model and a model with individual covariates and state fixed effects (clustered SE by state). Baseline treatment–control gap was small and statistically insignificant (p = 0.57), supporting the parallel-trends assumption.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">State-level detail</h2>
+    <p class="section-desc">Every treatment state moved up; every control state was roughly flat — the pattern is consistent, not driven by one outlier state.</p>
+    <div class="card">
+      <div class="legend">
+        <span><span class="dot" style="background:#9DC3E6"></span>2018 (baseline)</span>
+        <span><span class="dot" style="background:#0C2D48"></span>2022 (endline)</span>
+      </div>
+      <div class="chart-wrap" style="height:320px;">
+        <canvas id="stateChart" role="img" aria-label="Bar chart of modern contraceptive prevalence by state and wave, showing increases in all four treatment states and flat trends in all four control states"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Who is using modern contraception? (Treatment states, endline)</h2>
+    <p class="section-desc">Uptake rises with education and wealth, and is higher in urban areas — standard patterns worth controlling for in the regression.</p>
+    <div class="grid-3">
+      <div class="card">
+        <div class="section-title" style="font-size:13px;">By education</div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="educChart" role="img" aria-label="Bar chart of modern contraceptive use by education level"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="font-size:13px;">By wealth quintile</div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="wealthChart" role="img" aria-label="Bar chart of modern contraceptive use by wealth quintile, 1 poorest to 5 richest"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="font-size:13px;">Urban vs rural</div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="urChart" role="img" aria-label="Bar chart comparing modern contraceptive use in urban versus rural areas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Synthetic dataset built for methods-training purposes · N = 14,818 women 15–49 · 8 states (4 treatment, 4 control) · 2 survey waves<br>
+    Not real programme or DHS data. See accompanying research report and data dictionary for full methodology.
+  </div>
+</div>
+
+<script>
+const DATA = {"trend": {"Treatment": {"years": [2018, 2022], "values": [18, 32.2]}, "Control": {"years": [2018, 2022], "values": [17.3, 20.2]}}, "state_data": {"treatment_states": ["Bauchi", "Gombe", "Kaduna", "Kano"], "control_states": ["Adamawa", "Jigawa", "Katsina", "Yobe"], "treat_2018": [19.2, 18, 18.8, 16], "treat_2022": [30.9, 32.8, 31.4, 33.7], "ctrl_2018": [17.7, 19, 16.8, 15.6], "ctrl_2022": [19.9, 19.6, 21.3, 20]}, "educ_vals": [28.4, 31.7, 35.9, 47.1], "educ_order": ["No Education", "Primary", "Secondary", "Higher"], "wealth_vals": [28.7, 31.9, 31, 35.5, 35.3], "ur_vals": {"Urban": 38.3, "Rural": 29.5}, "kpi": {"baseline_treat": 18, "endline_treat": 32.2, "baseline_ctrl": 17.3, "endline_ctrl": 20.2, "n_total": 14923, "n_treat": 7397, "n_ctrl": 7526}, "did": [{"model": "Model 1: Simple DiD (no controls)", "did_coefficient_pp": 11.35, "std_error_pp": 1.51, "p_value": 5.96e-14, "ci_lower_pp": 8.39, "ci_upper_pp": 14.31}, {"model": "Model 2: DiD + covariates + state FE (modern method)", "did_coefficient_pp": 11.64, "std_error_pp": 1.46, "p_value": 1.789e-15, "ci_lower_pp": 8.78, "ci_upper_pp": 14.51}, {"model": "Model 3: DiD + covariates + state FE (any method)", "did_coefficient_pp": 10.43, "std_error_pp": 1.44, "p_value": 4.43e-13, "ci_lower_pp": 7.61, "ci_upper_pp": 13.25}]};
+
+function fmtPct(v){ return v.toFixed(1) + '%'; }
+
+// ---- KPI cards ----
+const kpiRow = document.getElementById('kpiRow');
+const kpiDefs = [
+  {label:'Treatment: baseline → endline', value: fmtPct(DATA.kpi.endline_treat), sub: fmtPct(DATA.kpi.baseline_treat) + ' → ' + fmtPct(DATA.kpi.endline_treat), highlight:true},
+  {label:'Control: baseline → endline', value: fmtPct(DATA.kpi.endline_ctrl), sub: fmtPct(DATA.kpi.baseline_ctrl) + ' → ' + fmtPct(DATA.kpi.endline_ctrl)},
+  {label:'DiD programme effect', value: '+' + DATA.did[0].did_coefficient_pp.toFixed(1) + ' pp', sub: '95% CI [' + DATA.did[0].ci_lower_pp.toFixed(1) + ', ' + DATA.did[0].ci_upper_pp.toFixed(1) + ']', highlight:true},
+  {label:'Sample size', value: DATA.kpi.n_total.toLocaleString(), sub: DATA.kpi.n_treat.toLocaleString() + ' treatment · ' + DATA.kpi.n_ctrl.toLocaleString() + ' control'},
+];
+kpiDefs.forEach(k => {
+  const div = document.createElement('div');
+  div.className = 'kpi-card' + (k.highlight ? ' kpi-highlight' : '');
+  div.innerHTML = `<div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div>`;
+  kpiRow.appendChild(div);
+});
+
+// ---- Trend chart ----
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: DATA.trend.Treatment.years,
+    datasets: [
+      {label:'Treatment states', data: DATA.trend.Treatment.values, borderColor:'#14508A', backgroundColor:'#14508A', pointRadius:6, pointHoverRadius:7, borderWidth:3, tension:0},
+      {label:'Control states', data: DATA.trend.Control.values, borderColor:'#BA7517', backgroundColor:'#BA7517', pointRadius:6, pointHoverRadius:7, borderWidth:3, tension:0}
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false}, tooltip:{callbacks:{label:(c)=>c.dataset.label+': '+c.formattedValue+'%'}} },
+    scales:{ y:{ title:{display:true, text:'Modern contraceptive prevalence (%)'}, ticks:{callback:v=>v+'%'} } }
+  }
+});
+
+// ---- DiD table ----
+const didTable = document.getElementById('didTable');
+let rows = '<tr><th>Model</th><th>Effect</th><th>95% CI</th><th>Sig.</th></tr>';
+DATA.did.forEach(d => {
+  const short = d.model.split(':')[0];
+  rows += `<tr><td>${short}<br><span style="color:var(--text-muted); font-size:11px;">${d.model.split(':')[1]}</span></td>
+    <td><b>+${d.did_coefficient_pp.toFixed(1)} pp</b></td>
+    <td>[${d.ci_lower_pp.toFixed(1)}, ${d.ci_upper_pp.toFixed(1)}]</td>
+    <td><span class="sig-badge">p < 0.001</span></td></tr>`;
+});
+didTable.innerHTML = rows;
+
+// ---- State chart ----
+new Chart(document.getElementById('stateChart'), {
+  type:'bar',
+  data:{
+    labels: [...DATA.state_data.treatment_states, ...DATA.state_data.control_states],
+    datasets:[
+      {label:'2018', data:[...DATA.state_data.treat_2018, ...DATA.state_data.ctrl_2018], backgroundColor:'#9DC3E6', borderRadius:3, maxBarThickness:28},
+      {label:'2022', data:[...DATA.state_data.treat_2022, ...DATA.state_data.ctrl_2022], backgroundColor:'#0C2D48', borderRadius:3, maxBarThickness:28}
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>c.dataset.label+': '+c.formattedValue+'%'}}},
+    scales:{y:{title:{display:true,text:'Modern CPR (%)'}, ticks:{callback:v=>v+'%'}}}
+  }
+});
+
+// ---- Education chart ----
+new Chart(document.getElementById('educChart'), {
+  type:'bar',
+  data:{ labels: DATA.educ_order, datasets:[{data:DATA.educ_vals, backgroundColor:'#1D9E75', borderRadius:4, maxBarThickness:36}] },
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>c.formattedValue+'%'}}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+
+// ---- Wealth chart ----
+new Chart(document.getElementById('wealthChart'), {
+  type:'bar',
+  data:{ labels:['Q1 (poorest)','Q2','Q3','Q4','Q5 (richest)'], datasets:[{data:DATA.wealth_vals, backgroundColor:'#7F77DD', borderRadius:4, maxBarThickness:36}] },
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>c.formattedValue+'%'}}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+
+// ---- Urban/Rural chart ----
+new Chart(document.getElementById('urChart'), {
+  type:'bar',
+  data:{ labels:['Urban','Rural'], datasets:[{data:[DATA.ur_vals.Urban, DATA.ur_vals.Rural], backgroundColor:['#D85A30','#F0997B'], borderRadius:4, maxBarThickness:60}] },
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>c.formattedValue+'%'}}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+</script>
+</body>
+</html>

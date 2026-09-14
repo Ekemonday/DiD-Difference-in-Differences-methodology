@@ -1,0 +1,14 @@
+DATA CLEANING LOG
+==================================================
+- Loaded raw data: 14975 rows, 14 columns
+- Standardized 'state' text (case/whitespace/typo fix): 25 raw variants -> 8 valid states
+- Trimmed whitespace and standardized casing in 'urban_rural'
+- Recoded 'currently_in_union' Yes/No text values to 0/1 integer
+- Dropped 12 records with age outside the 15-49 eligible range (data entry errors)
+- Removed 40 duplicate records (repeated respondent_id, i.e. double data entry)
+- Flagged 372 missing 'education' values as explicit 'Missing' category (not imputed)
+- Flagged 298 missing 'wealth_quintile' values as -1 (not imputed)
+- Median-imputed 224 missing 'parity' values (median=2); flagged in new 'parity_imputed' indicator column
+- Created derived variables: age_group, wave (label), post (0/1), treat_x_post (DiD interaction)
+- 
+Final cleaned dataset: 14923 rows, 19 columns -> saved to data/processed/cleaned_survey_data.csv
