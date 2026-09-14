@@ -2,7 +2,7 @@
 
 **A Difference-in-Differences evaluation, in R, of whether a family planning programme increased modern contraceptive uptake among women of reproductive age.**
 
-This repository contains a complete, reproducible evaluation pipeline — from synthetic data generation through cleaning, descriptive analysis, Difference-in-Differences (DiD) regression, an interactive dashboard, and a written report  for a hypothetical **State Family Planning Support Programme (SFPSP)** rolled out across four Northern Nigerian states.
+This repository contains a complete, reproducible evaluation pipeline  from synthetic data generation through cleaning, descriptive analysis, Difference-in-Differences (DiD) regression, an interactive dashboard, and a written report  for a hypothetical **State Family Planning Support Programme (SFPSP)** rolled out across four Northern Nigerian states.
 
 > **Note on the data:** No real programme-linked microdata meeting this design's requirements (repeated cross-section, treatment/control states, individual covariates, two survey waves) is publicly available. This project therefore uses a **synthetic, DHS-style dataset** generated in R, with a known true effect built into the data-generating process and realistic data-quality issues (typos, missing values, duplicates) injected on purpose so the cleaning step has something real to do. Effect sizes here are illustrative of *method*, not findings about any real programme.
 
